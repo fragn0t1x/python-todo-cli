@@ -73,11 +73,18 @@ def test_list_tasks(clean_tasks):
     add_task("Завершенная задача")
     complete_task(2)
 
+    # Активные задачи
     active = list_tasks(show_completed=False)
     assert len(active) == 1
     assert active[0]["title"] == "Активная задача"
 
-    all_tasks = list_tasks(show_completed=True)
+    # Выполненные задачи
+    completed = list_tasks(show_completed=True)
+    assert len(completed) == 1
+    assert completed[0]["title"] == "Завершенная задача"
+
+    # Все задачи (новая функция)
+    all_tasks = get_all_tasks()
     assert len(all_tasks) == 2
 
 
