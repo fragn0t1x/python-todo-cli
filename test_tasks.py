@@ -1,56 +1,66 @@
-# test_tasks.py
-from todo_list.main import tasks, add_task, complete_task, delete_task
+import pytest
+from main import tasks, add_task, complete_task, delete_task, search_tasks, list_tasks
 
 
-def test_add_task():
-    # 1. Подготовка (setup) — очищаем список перед тестом
+# Фикстура — автоматически очищает список перед каждым тестом
+@pytest.fixture
+def clean_tasks():
     tasks.clear()
+    yield  # Здесь выполняется тест
+    tasks.clear()  # После теста опять очищаем
 
-    # 2. Действие (action) — вызываем функцию
-    task = add_task("Купить хлеб", "Бездрожжевой", "high")
 
-    # 3. Проверка (assert) — сравниваем ожидание с реальностью
-    assert task["title"] == "Купить хлеб"
-    assert task["description"] == "Бездрожжевой"
+def test_add_task(clean_tasks):
+    task = add_task("Тест", "Описание", "high")
+    assert task["title"] == "Тест"
+    assert task["description"] == "Описание"
     assert task["priority"] == "high"
     assert task["completed"] is False
     assert len(tasks) == 1
-    assert tasks[0]["id"] == 1
 
 
-def test_complete_task():
-    tasks.clear()
-    add_task("Помыть посуду")
-
-    # Выполняем задачу
-    completed_task = complete_task(1)
-
-    # Проверяем
-    assert completed_task is not None
-    assert completed_task["completed"] is True
+def test_complete_task(clean_tasks):
+    add_task("Задача")
+    task = complete_task(1)
+    assert task is not None
+    assert task["completed"] is True
     assert tasks[0]["completed"] is True
 
 
-def test_complete_task_not_found():
-    tasks.clear()
-    add_task("Помыть посуду")
-
-    # Пытаемся выполнить несуществующую задачу
+def test_complete_task_not_found(clean_tasks):
+    add_task("Задача")
     result = complete_task(999)
     assert result is None
 
 
-def test_delete_task():
-    tasks.clear()
+def test_delete_task(clean_tasks):
     add_task("Задача 1")
     add_task("Задача 2")
-
-    # Удаляем первую
-    result = delete_task(1)
-    assert result is True
+    assert delete_task(1) is True
     assert len(tasks) == 1
     assert tasks[0]["title"] == "Задача 2"
+    assert delete_task(999) is False
 
-    # Пытаемся удалить несуществующую
-    result = delete_task(999)
-    assert result is False
+
+def test_search_tasks(clean_tasks):
+    add_task("Купить молоко", "Купить в магазине")
+    add_task("Позвонить маме", "Вечером")
+    results = search_tasks("молоко")
+    assert len(results) == 1
+    assert results[0]["title"] == "Купить молоко"
+
+    results = search_tasks("не существует")
+    assert results == []  # Пустой список
+
+
+def test_list_tasks(clean_tasks):
+    add_task("Активная задача")
+    add_task("Завершенная задача")
+    complete_task(2)
+
+    active = list_tasks(show_completed=False)
+    assert len(active) == 1
+    assert active[0]["title"] == "Активная задача"
+
+    all_tasks = list_tasks(show_completed=True)
+    assert len(all_tasks) == 2
