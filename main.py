@@ -44,9 +44,10 @@ def add_task(title: str, description: str = "", priority: str = "medium") -> dic
 
 
 def list_tasks(show_completed: bool = False) -> list[dict]:
-    """Возвращает задачи. Если show_completed=False, только активные."""
+    """Возвращает задачи. Если show_completed=False — только активные."""
     if show_completed:
         return [task for task in tasks if task["completed"]]
+    # Возвращаем только НЕвыполненные задачи
     return [task for task in tasks if not task["completed"]]
 
 
