@@ -86,6 +86,10 @@ def sort_tasks(by: str = "priority") -> list[dict]:
         return sorted(tasks, key=lambda t: t.get("created_at", ""), reverse=True)
 
 
+def get_all_tasks() -> list[dict]:
+    """Возвращает все задачи (без фильтрации)."""
+    return tasks.copy()
+
 def get_stats() -> dict:
     """Возвращает статистику по задачам."""
     completed = sum(1 for task in tasks if task["completed"])
