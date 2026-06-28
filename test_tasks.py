@@ -1,6 +1,6 @@
 # test_tasks.py
 import pytest
-from todo_list.main import tasks, add_task, complete_task, delete_task, search_tasks, list_tasks, sort_tasks
+from todo_list.main import tasks, add_task, complete_task, delete_task, search_tasks, list_tasks, sort_tasks, get_all_tasks
 
 
 # Фикстура для очистки списка задач перед каждым тестом
